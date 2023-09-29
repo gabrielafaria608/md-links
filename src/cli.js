@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 
-const { extractLinks } = require('./index');
+const { mdLinks } = require('./md-links.js');
 
 const path = process.argv[2];
 
-extractLinks(path)
-  .then((links) => {
-    console.log(links);
-  });
+const options = {
+  validate: process.argv.includes('--validate'),
+  stats: process.argv.includes('--stats'),
+};
+
+mdLinks(path, options);

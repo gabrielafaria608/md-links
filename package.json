@@ -16,7 +16,7 @@
     "md-links": "./src/cli.js"
   },
   "scripts": {
-    "eslint": "eslint --ext .js src/ test/",
+    "eslint": "eslint --ext .js src/",
     "pretest": "npm run eslint",
     "test": "jest --coverage"
   },
@@ -26,12 +26,18 @@
     "commit": "a5360f78b634be4f14eaea996ee4c7afc85a2f48"
   },
   "devDependencies": {
+    "@babel/cli": "^7.23.0",
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.22.20",
     "eslint": "^8.50.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-jest": "^27.4.0",
     "jest": "^29.7.0"
   },
   "dependencies": {
-    "chalk": "^5.3.0"
-  }
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
+    "chalk": "^4.1.2"
+  },
+  "type": "commonjs"
 }
