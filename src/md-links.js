@@ -1,28 +1,26 @@
 const fs = require('fs');
-const chalk = require('chalk');
 
-function validate(link) {
-  return fetch(link.url)
-    .then((response) => response.status)
-    .catch((error) => {
-      throw new Error(chalk.redBright(error.code, 'The indicated file does not have links.'));
-    });
+function validate(links) {
+  return Promise.all(
+    links.map((link) => fetch(link.url)
+      .then((response) => {
+        const obj = link;
+        obj.status = response.status;
+        return link;
+      })),
+  );
 }
 
 function stats(arrayOfLinks) {
   const countLinks = arrayOfLinks.length;
   const uniqueLinks = new Set(arrayOfLinks.map((findLink) => findLink.url)).size;
   let brokenLinks = 0;
-  const promises = arrayOfLinks.map((link) => validate(link)
-    .then((status) => {
-      if (status !== 200) {
-        brokenLinks++;
-      }
-    }));
-  Promise.all(promises)
-    .then(() => {
-      console.log(chalk.yellowBright(`Link statistics:\n${chalk.greenBright('\nTotal:')} ${chalk.greenBright(countLinks)}\n${chalk.magentaBright('Unique:')} ${chalk.magentaBright(uniqueLinks)}\n${chalk.redBright('Broken:')} ${chalk.redBright(brokenLinks)}`));
-    });
+  arrayOfLinks.forEach((link) => {
+    if (link.status !== 200) {
+      brokenLinks++;
+    }
+  });
+  return { countLinks, uniqueLinks, brokenLinks };
 }
 
 function extractLinks(path) {
@@ -41,59 +39,28 @@ function extractLinks(path) {
     });
 }
 
-function handleLogs(link, status) {
-  if (status === 200) {
-    console.log(`${chalk.greenBright('☑ OK')} | ${chalk.greenBright(status)} ${chalk.magentaBright(link.text)}: ${chalk.blueBright(link.url)}`);
-  } else {
-    console.log(`${chalk.redBright('☒ FAIL')} | ${chalk.redBright(status)} ${chalk.redBright(link.text)}: ${chalk.redBright(link.url)}`);
-  }
+function checkStatusOfLinks(filePath) {
+  return extractLinks(filePath)
+    .then((arrayOfLinks) => validate(arrayOfLinks).then((validatedLinks) => validatedLinks));
 }
 
-function checkStatsAndValidate(path, options) {
-  extractLinks(path).then((links) => {
-    if (options.validate && options.stats) {
-      stats(links);
-      console.log(chalk.yellowBright('\nList of links:\n'));
-      links.forEach((link) => {
-        validate(link)
-          .then((status) => {
-            handleLogs(link, status);
-          });
-      });
-    } else if (options.validate) {
-      console.log(chalk.yellowBright('\nList of links:\n'));
-      links.forEach((link) => {
-        validate(link)
-          .then((status) => {
-            handleLogs(link, status);
-          });
-      });
-    } else if (options.stats) {
-      stats(links);
-    } else {
-      console.log(links);
-    }
-  });
-}
-
-function mdLinks(path, options) {
+function mdLinks(path) {
   if (fs.lstatSync(path).isDirectory()) {
-    fs.promises.readdir(path).then((files) => {
-      const fileName = files.filter((file) => file.endsWith('.md'));
-      const filePath = `${path}/${fileName}`;
-      checkStatsAndValidate(filePath, options);
-    });
+    return fs.promises.readdir(path)
+      .then((files) => {
+        const fileName = files.filter((file) => file.endsWith('.md'));
+        const filePath = `${path}/${fileName}`;
+        return checkStatusOfLinks(filePath)
+          .then((result) => result);
+      });
   } else if (path.endsWith('.md')) {
-    checkStatsAndValidate(path, options);
-  } else {
-    console.log('file is not markdown');
+    return checkStatusOfLinks(path)
+      .then((result) => result);
   }
 }
-
 module.exports = {
   mdLinks,
   extractLinks,
   validate,
   stats,
-  handleLogs,
 };
