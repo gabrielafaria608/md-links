@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
 const chalk = require('chalk');
-const { mdLinks, stats } = require('./md-links.js');
+const { mdLinks } = require('./md-links.js');
+const { stats } = require('./validate-stats.js');
 
 const path = process.argv[2];
 
@@ -29,7 +30,7 @@ function handleLogs(links, options, stats) {
       }
     });
   } else if (options.stats) {
-    console.log(chalk.yellowBright(`Link statistics:\n${chalk.greenBright('\nTotal:')} ${chalk.greenBright(stats.countLinks)}\n${chalk.magentaBright('Unique:')} ${chalk.magentaBright(stats.uniqueLinks)}\n${chalk.redBright('Broken:')} ${chalk.redBright(stats.brokenLinks)}`));
+    console.log(chalk.yellowBright(`Link statistics:\n${chalk.greenBright('\nTotal:')} ${chalk.greenBright(stats.countLinks)}\n${chalk.magentaBright('Unique:')} ${chalk.magentaBright(stats.uniqueLinks)}`));
   } else {
     links.forEach((link) => {
       console.log(`${chalk.magentaBright(link.text)}: ${chalk.blueBright(link.url)}`);
@@ -41,4 +42,7 @@ mdLinks(path, options)
   .then((links) => {
     const result = stats(links);
     handleLogs(links, options, result);
+  })
+  .catch((error) => {
+    console.log(error);
   });
