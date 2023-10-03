@@ -1,5 +1,5 @@
 {
-  "name": "md-links",
+  "name": "md-links-gabriela-faria",
   "version": "0.1.0",
   "description": "Validate and get stats on links found in markdown files",
   "main": "index.js",
@@ -37,7 +37,8 @@
   },
   "dependencies": {
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
-    "chalk": "^4.1.2"
+    "chalk": "^4.1.2",
+    "md-links-gabriela-faria": "^0.1.0"
   },
   "type": "commonjs"
 }

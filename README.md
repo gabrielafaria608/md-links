@@ -31,7 +31,7 @@ Md-links is an Javascript library that simplifies the process of extracting link
 ## 3. Getting started
 
 ```
-npm install
+npm install md-links-gabriela-faria
 ```
 
 To extract links from a Markdown file, run:
@@ -80,4 +80,4 @@ md-links directoryName/fileName.md --stats --validate
 
 **Gabriela Faria**
 - On github: [@gabrielafaria608](https://github.com/gabrielafaria608)
-- On Linkedin: [@gabrielafaria](https://www.linkedin.com/in/gabriela-faria-649503182)
+- On Linkedin: [@gabrielafaria](https://www.linkedin.com/in/gabriela-faria-649503182/)
